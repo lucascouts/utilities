@@ -35,13 +35,16 @@ cp $LFS/boot/vmlinuz-* $WDIR/boot/vmlinuz
 cp $LFS/boot/initrd* $WDIR/boot/initrd
 
 mksquashfs $LFS $WDIR/filesystem/root.sfs \
-		-b 1048576 -comp xz -Xdict-size 100% \
+		-comp zstd -b 1M -Xcompression-level 22 \
 		
 rm -f $OUTPUT
 xorriso -as mkisofs \
 		-r -J -joliet-long \
 		-l -cache-inodes \
 		-isohybrid-mbr $ISOLINUXDIR/isohdpfx.bin \
+		-isohybrid-gpt-basdat -iso-level 4 \
+		-eltorito-alt-boot \
+		-e isolinux/efiboot.img \
 		-partition_offset 16 \
 		-volid "$LABEL" \
 		-b isolinux/isolinux.bin \
